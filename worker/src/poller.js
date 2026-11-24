@@ -1,5 +1,5 @@
 /**
- * 图床频道定时轮询（Workers 版的「监听」替代）
+ * 文件上传频道定时轮询（Workers 版的「监听」替代）
  *
  * 背景：图床（CloudFlare-ImgBed）上传文件后会通过 webhook 把文件推到
  * 一个固定的 Discord 频道。网关版 importer 靠 messageCreate 事件实时
@@ -50,7 +50,7 @@ export async function pollImgbedChannel(ctx) {
             await sendLog(env, 'info', {
                 module: 'Poller',
                 operation: '首次启动',
-                message: `图床频道轮询已启用，书签钉在消息 ${latest[latest.length - 1].id}，此后的新文件将被自动导入。`,
+                message: `文件上传频道轮询已启用，书签钉在消息 ${latest[latest.length - 1].id}，此后的新文件将被自动导入。`,
             });
         }
         return;
@@ -59,9 +59,13 @@ export async function pollImgbedChannel(ctx) {
     const messages = await api.listMessagesAfter(env, channelId, bookmark, 100);
     for (const message of messages) {
         try {
-            const isBot = !!message.author?.bot;
-            const isWebhook = !!message.webhook_id;
-            if ((!isBot || isWebhook) && (message.attachments || []).length > 0) {
+            // 本频道是专门的收件频道：图床的 txt 帖由 relay bot 以 bot 账号
+            // 发出（无 webhook_id），旧过滤会把它们整批跳过。放行 bot 帖；
+            // 本 bot 从不在此频道发消息（只加表情），不会自循环；
+            // 仍跳过本 bot 自己的帖子以防万一。
+            const isSelf = !!ctx.env.DISCORD_APPLICATION_ID
+                && message.author?.id === ctx.env.DISCORD_APPLICATION_ID;
+            if (!isSelf && (message.attachments || []).length > 0) {
                 await processChannelMessage(ctx, message);
             }
         } catch (e) {
@@ -73,7 +77,7 @@ export async function pollImgbedChannel(ctx) {
             }).catch(() => {});
         } finally {
             // 无论成败都推进书签，避免一条坏消息堵住整个队列；
-            // 失败的文件在日志频道有记录，可手动用 /aaa导入 补
+            // 失败的文件在日志频道有记录，可手动用 /导入 补
             await saveBookmark(ctx, message.id).catch(() => {});
         }
     }
