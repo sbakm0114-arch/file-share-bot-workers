@@ -17,8 +17,11 @@ import { createApiConfigStore } from './core/api_config_store.js';
 import { executeImportCommand } from './handlers/import_command.js';
 import { executeArchiveUpload } from './handlers/archive_upload.js';
 import { executeTagSearch, executeCharSearch, handleSearchPageButton } from './handlers/archive_search.js';
+import { executeManual } from './handlers/manual.js';
 import { executeApiPanel, handleApiComponent, handleApiModal } from './handlers/api_panel.js';
 import { pollImgbedChannel } from './poller.js';
+import { linkWatchTick, executeWatchLinkCommand } from './link_watch.js';
+import { healthSweepTick } from './health_check.js';
 import { COMMANDS } from './commands.js';
 
 function makeCtx(env) {
@@ -57,11 +60,13 @@ function settle(result, execCtx) {
 async function routeCommand(ctx, interaction) {
     const name = interaction.data.name;
     switch (name) {
-        case 'aaa导入': return executeImportCommand(ctx, interaction);
-        case 'aaa素材上传': return executeArchiveUpload(ctx, interaction);
-        case 'aaa素材搜索': return executeTagSearch(ctx, interaction);
-        case 'aaa角色搜索': return executeCharSearch(ctx, interaction);
-        case 'aaa更换api': return executeApiPanel(ctx, interaction);
+        case '导入': return executeImportCommand(ctx, interaction);
+        case '文件上传': return executeArchiveUpload(ctx, interaction);
+        case '标签搜索': return executeTagSearch(ctx, interaction);
+        case '角色搜索': return executeCharSearch(ctx, interaction);
+        case '使用手册': return executeManual(ctx, interaction);
+        case '关注链接': return executeWatchLinkCommand(ctx, interaction);
+        case '更换api': return executeApiPanel(ctx, interaction);
         default:
             return { type: 4, data: { content: '未知命令', flags: 64 } };
     }
@@ -178,6 +183,12 @@ export default {
             const ctx = makeCtx(env);
             execCtx.waitUntil(
                 pollImgbedChannel(ctx).catch(e => console.error('[Poller] 轮询出错:', e))
+            );
+            execCtx.waitUntil(
+                linkWatchTick(ctx).catch(e => console.error('[LinkWatch] 盯梢出错:', e))
+            );
+            execCtx.waitUntil(
+                healthSweepTick(ctx).catch(e => console.error('[Health] 巡检出错:', e))
             );
         } catch (e) {
             console.error('[Poller] 初始化失败:', e.message);

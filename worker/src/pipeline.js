@@ -6,7 +6,7 @@
  *   → 保存 Asset（Supabase）→ 图床备份 → 自动打标签 → 日志
  *
  * 差别只在外壳：discord.js 的 channel/thread/message 对象换成 REST 调用；
- * 触发方式有三个入口共用本流水线——/aaa导入 命令、图床频道定时轮询、
+ * 触发方式有三个入口共用本流水线——/导入 命令、文件上传频道定时轮询、
  * （网关版在 gateway/ 目录里，仍用它自己的 importer）。
  */
 
