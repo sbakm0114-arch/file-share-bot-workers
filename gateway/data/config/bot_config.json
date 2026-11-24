@@ -2,26 +2,26 @@
     "main_config": {
         "safety_setting": {
             "command_push_guildids": [
-                "1361614969510035496"
+                ""
             ],
             "developers_userid": [
-                "1231860738616725514"
+                ""
             ],
             "admin_roleid": [
-                "1231860738616725514"
+                ""
             ],
             "user_roleid": []
         }
     },
     "file_share": {
         "forum_channel_ids": [
-            "1514252550495408290",
-            "1514252899088339015"
+            "",
+            ""
         ],
         "daily_download_limit": 10000
     },
     "logger": {
-        "log_channel_id": "1511618539289710682",
+        "log_channel_id": "",
         "log_levels": {
             "info": {
                 "name": "ℹ️ 信息",
@@ -42,13 +42,13 @@
         }
     },
     "archive": {
-        "storage_channel_id": "1513905088337412166",
+        "storage_channel_id": "",
         "max_upload_size_mb": 10
     },
     "auto_tag": {
         "enabled_channels": [
-            "1514252550495408290",
-            "1514252899088339015"
+            "",
+            ""
         ]
     }
 }
