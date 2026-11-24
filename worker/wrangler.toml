@@ -6,7 +6,7 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
-# 定时轮询图床 Discord 频道（每 5 分钟；可在 Cloudflare 后台调整）
+# 定时任务（每 5 分钟；可在 Cloudflare 后台调整）
 [triggers]
 crons = ["*/5 * * * *"]
 
