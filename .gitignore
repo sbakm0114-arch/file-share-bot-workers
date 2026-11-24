@@ -6,3 +6,4 @@ node_modules/
 logs/
 data/assets_backup/
 .DS_Store
+dist/
