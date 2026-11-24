@@ -155,6 +155,8 @@ https://discord.com/oauth2/authorize?client_id=<应用ID>&scope=bot%20applicatio
 找到 `[vars]` 那一段，把里面的值换成你自己的编号（要填哪几项，和命令行版第 2 步的清单一样），
 改完点页面下方的 **Commit changes** 保存。
 
+> ⚠️ 这个文件里**只填编号**。Bot 的 Token 和 Supabase 的钥匙**千万不要写进这个文件**——仓库是公开的，写进去等于把钥匙贴在门上。钥匙只在网页版第 5 步里填。
+
 ### 网页版第 4 步：让 Cloudflare 从 GitHub 把 bot 拉上线
 
 打开 Cloudflare 后台 → **Workers & Pages** → **Create（创建）** → 选 **Import a repository（导入仓库）**，
