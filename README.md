@@ -53,6 +53,8 @@
 
 ## 动手装，一共七步
 
+> 下面是命令行版。不会用命令行的往下翻，有一节「纯网页部署」，全程只点网页，两边选一边做就行。
+
 ### 第 1 步：在 Supabase 里建好存数据的表
 
 打开 Supabase 后台，进你的项目，找到 **SQL Editor**，
@@ -129,6 +131,74 @@ https://discord.com/oauth2/authorize?client_id=<应用ID>&scope=bot%20applicatio
 > 命令能弹出来、能填，但一执行就失败。九成是这一步没做对，回来重做这一遍就好。
 
 ---
+
+---
+
+## 不会用命令行？看这里：纯网页部署
+
+上面那七步是命令行版。**一行命令都不想敲的话，做这一版**，全程只用浏览器点页面，效果完全一样。
+前面「开始之前」里要准备的账号和要抄的编号，两版通用，先照那一节准备好。
+
+### 网页版第 1 步：把仓库搬到你自己的 GitHub 名下
+
+打开本仓库的页面，点右上角的 **Fork**，把仓库复制一份到你自己的 GitHub 账号里。
+后面改的、部署的，都是你自己这份。
+
+### 网页版第 2 步：在 Supabase 里建好存数据的表
+
+和命令行版第 1 步一样：打开 Supabase 后台，进你的项目，找到 **SQL Editor**，
+把你那份仓库里 `worker/sql/schema.sql` 的内容整段粘进去，点运行。
+
+### 网页版第 3 步：在网页上把频道编号填进配置文件
+
+在你自己的仓库里打开 `worker/wrangler.toml`，点右上角的**铅笔图标**（编辑），
+找到 `[vars]` 那一段，把里面的值换成你自己的编号（要填哪几项，和命令行版第 2 步的清单一样），
+改完点页面下方的 **Commit changes** 保存。
+
+### 网页版第 4 步：让 Cloudflare 从 GitHub 把 bot 拉上线
+
+打开 Cloudflare 后台 → **Workers & Pages** → **Create（创建）** → 选 **Import a repository（导入仓库）**，
+连上你的 GitHub，选你刚 Fork 的那个仓库。
+构建设置里把**根目录（Root directory）填成 `worker`**，其他保持默认，点部署。
+
+跑完之后它会给你一个网址（长得像 `https://file-share-bot.xxx.workers.dev`），**把这个网址记下来**。
+
+### 网页版第 5 步：在页面上把钥匙填进去
+
+还是在 Cloudflare 后台，打开刚部署好的这个 Worker → **Settings（设置）→ Variables and Secrets（变量和密钥）** → **Add（添加）**，
+把下面四个逐个加上。**类型都要选「Secret / 密钥」那种加密的**，不要选明文变量：
+
+- `DISCORD_TOKEN`：Bot 的 Token
+- `DISCORD_PUBLIC_KEY`：Public Key
+- `SUPABASE_KEY`：Supabase 的 `service_role` 钥匙
+- `ADMIN_TOKEN`：这个你自己随便编一串（比如一串长一点的字母数字），下一步注册命令时当门票用，记下来别丢
+
+保存即生效，不用重新部署。以后换钥匙也在这里换，同样立刻生效。
+
+### 网页版第 6 步：把网址填回 Discord
+
+回到 Discord 开发者后台 → 你的应用 → General Information 页，
+把 **Interactions Endpoint URL** 填成网页版第 4 步的那个网址，保存。
+能保存成功，就说明两边通上了。
+
+### 网页版第 7 步：在浏览器里注册命令
+
+在浏览器地址栏打开（把网址和门票换成你自己的）：
+
+```
+https://你的Worker网址/admin/register?token=你的ADMIN_TOKEN
+```
+
+页面显示 `register → HTTP 200` 就说明注册好了，命令会出现在 Discord 的输入框里。
+
+### 网页版第 8 步：请 bot 进你的服务器
+
+和命令行版第 7 步完全一样：用那条带 `integration_type=0` 的邀请链接请它进来，
+授权时选「添加至服务器」，最后去成员列表里确认能看到它。这一步最容易摔，细看那一节的提醒。
+
+> 网页版改配置的方法：改频道编号就回 GitHub 网页改 `wrangler.toml`，保存后 Cloudflare 会自己重新部署一次；
+> 改钥匙就回网页版第 5 步的那个设置页，改完立刻生效。
+
 
 ## 装好了怎么用
 
